@@ -14,8 +14,18 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as ModulesRouteImport } from './routes/modules'
 import { Route as TrustRouteImport } from './routes/trust'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppAutomationsRouteImport } from './routes/app.automations'
 import { Route as AppCommandRouteImport } from './routes/app.command'
+import { Route as AppDocumentsRouteImport } from './routes/app.documents'
+import { Route as AppFinanceRouteImport } from './routes/app.finance'
+import { Route as AppInsightsRouteImport } from './routes/app.insights'
+import { Route as AppMessagesRouteImport } from './routes/app.messages'
+import { Route as AppMomentsRouteImport } from './routes/app.moments'
+import { Route as AppPeopleRouteImport } from './routes/app.people'
 import { Route as AppProjectsRouteImport } from './routes/app.projects'
+import { Route as AppRelationsRouteImport } from './routes/app.relations'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppSupportRouteImport } from './routes/app.support'
 import { Route as AppTasksRouteImport } from './routes/app.tasks'
 
 const IndexRoute = IndexRouteImport.update({
@@ -43,14 +53,64 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAutomationsRoute = AppAutomationsRouteImport.update({
+  id: '/automations',
+  path: '/automations',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCommandRoute = AppCommandRouteImport.update({
   id: '/command',
   path: '/command',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDocumentsRoute = AppDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFinanceRoute = AppFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInsightsRoute = AppInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMessagesRoute = AppMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMomentsRoute = AppMomentsRouteImport.update({
+  id: '/moments',
+  path: '/moments',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPeopleRoute = AppPeopleRouteImport.update({
+  id: '/people',
+  path: '/people',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProjectsRoute = AppProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRelationsRoute = AppRelationsRouteImport.update({
+  id: '/relations',
+  path: '/relations',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSupportRoute = AppSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => AppRoute,
 } as any)
 const AppTasksRoute = AppTasksRouteImport.update({
@@ -64,8 +124,18 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/modules': typeof ModulesRoute
   '/trust': typeof TrustRoute
+  '/app/automations': typeof AppAutomationsRoute
   '/app/command': typeof AppCommandRoute
+  '/app/documents': typeof AppDocumentsRoute
+  '/app/finance': typeof AppFinanceRoute
+  '/app/insights': typeof AppInsightsRoute
+  '/app/messages': typeof AppMessagesRoute
+  '/app/moments': typeof AppMomentsRoute
+  '/app/people': typeof AppPeopleRoute
   '/app/projects': typeof AppProjectsRoute
+  '/app/relations': typeof AppRelationsRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/support': typeof AppSupportRoute
   '/app/tasks': typeof AppTasksRoute
   '/app/': typeof AppIndexRoute
 }
@@ -73,8 +143,18 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/modules': typeof ModulesRoute
   '/trust': typeof TrustRoute
+  '/app/automations': typeof AppAutomationsRoute
   '/app/command': typeof AppCommandRoute
+  '/app/documents': typeof AppDocumentsRoute
+  '/app/finance': typeof AppFinanceRoute
+  '/app/insights': typeof AppInsightsRoute
+  '/app/messages': typeof AppMessagesRoute
+  '/app/moments': typeof AppMomentsRoute
+  '/app/people': typeof AppPeopleRoute
   '/app/projects': typeof AppProjectsRoute
+  '/app/relations': typeof AppRelationsRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/support': typeof AppSupportRoute
   '/app/tasks': typeof AppTasksRoute
   '/app': typeof AppIndexRoute
 }
@@ -84,8 +164,18 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/modules': typeof ModulesRoute
   '/trust': typeof TrustRoute
+  '/app/automations': typeof AppAutomationsRoute
   '/app/command': typeof AppCommandRoute
+  '/app/documents': typeof AppDocumentsRoute
+  '/app/finance': typeof AppFinanceRoute
+  '/app/insights': typeof AppInsightsRoute
+  '/app/messages': typeof AppMessagesRoute
+  '/app/moments': typeof AppMomentsRoute
+  '/app/people': typeof AppPeopleRoute
   '/app/projects': typeof AppProjectsRoute
+  '/app/relations': typeof AppRelationsRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/support': typeof AppSupportRoute
   '/app/tasks': typeof AppTasksRoute
   '/app/': typeof AppIndexRoute
 }
@@ -96,8 +186,18 @@ export interface FileRouteTypes {
     | '/app'
     | '/modules'
     | '/trust'
+    | '/app/automations'
     | '/app/command'
+    | '/app/documents'
+    | '/app/finance'
+    | '/app/insights'
+    | '/app/messages'
+    | '/app/moments'
+    | '/app/people'
     | '/app/projects'
+    | '/app/relations'
+    | '/app/settings'
+    | '/app/support'
     | '/app/tasks'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
@@ -105,8 +205,18 @@ export interface FileRouteTypes {
     | '/'
     | '/modules'
     | '/trust'
+    | '/app/automations'
     | '/app/command'
+    | '/app/documents'
+    | '/app/finance'
+    | '/app/insights'
+    | '/app/messages'
+    | '/app/moments'
+    | '/app/people'
     | '/app/projects'
+    | '/app/relations'
+    | '/app/settings'
+    | '/app/support'
     | '/app/tasks'
     | '/app'
   id:
@@ -115,8 +225,18 @@ export interface FileRouteTypes {
     | '/app'
     | '/modules'
     | '/trust'
+    | '/app/automations'
     | '/app/command'
+    | '/app/documents'
+    | '/app/finance'
+    | '/app/insights'
+    | '/app/messages'
+    | '/app/moments'
+    | '/app/people'
     | '/app/projects'
+    | '/app/relations'
+    | '/app/settings'
+    | '/app/support'
     | '/app/tasks'
     | '/app/'
   fileRoutesById: FileRoutesById
@@ -165,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/automations': {
+      id: '/app/automations'
+      path: '/automations'
+      fullPath: '/app/automations'
+      preLoaderRoute: typeof AppAutomationsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/command': {
       id: '/app/command'
       path: '/command'
@@ -172,11 +299,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCommandRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/documents': {
+      id: '/app/documents'
+      path: '/documents'
+      fullPath: '/app/documents'
+      preLoaderRoute: typeof AppDocumentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/finance': {
+      id: '/app/finance'
+      path: '/finance'
+      fullPath: '/app/finance'
+      preLoaderRoute: typeof AppFinanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/insights': {
+      id: '/app/insights'
+      path: '/insights'
+      fullPath: '/app/insights'
+      preLoaderRoute: typeof AppInsightsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/messages': {
+      id: '/app/messages'
+      path: '/messages'
+      fullPath: '/app/messages'
+      preLoaderRoute: typeof AppMessagesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/moments': {
+      id: '/app/moments'
+      path: '/moments'
+      fullPath: '/app/moments'
+      preLoaderRoute: typeof AppMomentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/people': {
+      id: '/app/people'
+      path: '/people'
+      fullPath: '/app/people'
+      preLoaderRoute: typeof AppPeopleRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/projects': {
       id: '/app/projects'
       path: '/projects'
       fullPath: '/app/projects'
       preLoaderRoute: typeof AppProjectsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/relations': {
+      id: '/app/relations'
+      path: '/relations'
+      fullPath: '/app/relations'
+      preLoaderRoute: typeof AppRelationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/support': {
+      id: '/app/support'
+      path: '/support'
+      fullPath: '/app/support'
+      preLoaderRoute: typeof AppSupportRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/tasks': {
@@ -190,15 +380,35 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppAutomationsRoute: typeof AppAutomationsRoute
   AppCommandRoute: typeof AppCommandRoute
+  AppDocumentsRoute: typeof AppDocumentsRoute
+  AppFinanceRoute: typeof AppFinanceRoute
+  AppInsightsRoute: typeof AppInsightsRoute
+  AppMessagesRoute: typeof AppMessagesRoute
+  AppMomentsRoute: typeof AppMomentsRoute
+  AppPeopleRoute: typeof AppPeopleRoute
   AppProjectsRoute: typeof AppProjectsRoute
+  AppRelationsRoute: typeof AppRelationsRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppSupportRoute: typeof AppSupportRoute
   AppTasksRoute: typeof AppTasksRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAutomationsRoute: AppAutomationsRoute,
   AppCommandRoute: AppCommandRoute,
+  AppDocumentsRoute: AppDocumentsRoute,
+  AppFinanceRoute: AppFinanceRoute,
+  AppInsightsRoute: AppInsightsRoute,
+  AppMessagesRoute: AppMessagesRoute,
+  AppMomentsRoute: AppMomentsRoute,
+  AppPeopleRoute: AppPeopleRoute,
   AppProjectsRoute: AppProjectsRoute,
+  AppRelationsRoute: AppRelationsRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppSupportRoute: AppSupportRoute,
   AppTasksRoute: AppTasksRoute,
   AppIndexRoute: AppIndexRoute,
 }
