@@ -46,7 +46,7 @@ function Dashboard() {
             <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
               <Sparkles className="size-3.5 text-highlight" /> Proposal
             </div>
-            <p className="mt-2 text-lg font-semibold">{proposals[0].title}</p>
+            <p className="mt-2 text-lg font-semibold">{proposals[0]?.title}</p>
             <p className="mt-1 text-sm text-muted-foreground">Draft ready · Review before sending</p>
             <Button asChild className="mt-5">
               <Link to="/app/command">Review proposal</Link>

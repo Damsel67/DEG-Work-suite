@@ -15,9 +15,9 @@ export const Route = createFileRoute("/app/support")({
 });
 
 function SupportPage() {
-  const [selected, setSelected] = useState(tickets[0].id);
+  const [selected, setSelected] = useState(tickets[0]?.id ?? "");
   const [mode, setMode] = useState<"reply" | "internal">("reply");
-  const t = tickets.find((x) => x.id === selected)!;
+  const t = tickets.find((x) => x.id === selected) ?? tickets[0]!;
 
   return (
     <div className="space-y-8">

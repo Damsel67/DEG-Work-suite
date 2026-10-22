@@ -32,7 +32,7 @@ function AutomationsPage() {
                 <p className="mt-1 text-sm text-muted-foreground">{a.trigger}</p>
               </div>
               <Switch
-                checked={enabled[a.id]}
+                checked={enabled[a.id] ?? true}
                 onCheckedChange={(v) => {
                   setEnabled((s) => ({ ...s, [a.id]: v }));
                   toast(v ? "Workflow resumed" : "Workflow paused");

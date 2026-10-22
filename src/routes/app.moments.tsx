@@ -27,7 +27,7 @@ function MomentsPage() {
   const save = () => {
     if (!body.trim()) return;
     setEntries((e) => [
-      { id: `j${Date.now()}`, date: "Today", prompt: reflectionPrompts[promptIdx], body: body.trim(), mood },
+      { id: `j${Date.now()}`, date: "Today", prompt: reflectionPrompts[promptIdx] ?? "", body: body.trim(), mood },
       ...e,
     ]);
     setBody("");

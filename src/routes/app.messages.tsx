@@ -14,7 +14,7 @@ export const Route = createFileRoute("/app/messages")({
 });
 
 function MessagesPage() {
-  const [active, setActive] = useState(threads[0].id);
+  const [active, setActive] = useState(threads[0]?.id ?? "");
   const [msgs, setMsgs] = useState(threadMessages);
   const [text, setText] = useState("");
 
