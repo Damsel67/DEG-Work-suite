@@ -25,7 +25,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="px-3 pb-2 pt-4">
         <Link to="/app" className="block group-data-[collapsible=icon]:hidden" aria-label="DEG WorkSuite home">
-          <Logo surface="onDark" className="h-9" />
+          <Logo surface="onDark" className="h-8" />
         </Link>
         <Link to="/app" className="hidden group-data-[collapsible=icon]:block" aria-label="DEG WorkSuite home">
           <img src={moduleByKey("command").icon} alt="" className="size-8 rounded-lg" />

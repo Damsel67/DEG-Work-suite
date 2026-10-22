@@ -17,12 +17,12 @@ export function Logo({ surface = "auto", tagline = false, className }: Props) {
   const base = cn("h-auto w-auto select-none", className);
 
   if (surface === "onDark") {
-    return <img src={dark} alt="DEG WorkSuite" className={base} width={1500} height={380} />;
+    return <img src={dark} alt="DEG WorkSuite" className={base} width={1204} height={226} />;
   }
   return (
     <>
-      <img src={light} alt="DEG WorkSuite" className={cn(base, "dark:hidden")} width={1500} height={380} />
-      <img src={dark} alt="DEG WorkSuite" className={cn(base, "hidden dark:block")} width={1500} height={380} />
+      <img src={light} alt="DEG WorkSuite" className={cn(base, "dark:hidden")} width={1204} height={226} />
+      <img src={dark} alt="DEG WorkSuite" className={cn(base, "hidden dark:block")} width={1204} height={226} />
     </>
   );
 }

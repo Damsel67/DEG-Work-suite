@@ -16,7 +16,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-5 md:px-8">
           <Link to="/" aria-label="DEG WorkSuite home" className="shrink-0">
-            <Logo className="h-9 md:h-10" />
+            <Logo className="h-8 md:h-9" />
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
             {NAV.map((n) => (
@@ -61,7 +61,7 @@ function SiteFooter() {
     <footer className="border-t border-border bg-canvas">
       <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 md:grid-cols-[1.4fr_1fr_1fr] md:px-8">
         <div>
-          <Logo tagline className="h-12" />
+          <Logo tagline className="h-14" />
           <p className="mt-5 max-w-sm text-sm text-muted-foreground">
             A proposed product in active design. Features shown in the prototype use sample data and are not yet live.
           </p>
