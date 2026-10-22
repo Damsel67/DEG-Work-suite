@@ -34,7 +34,7 @@ function answerFor(q: string): Msg {
 
 function CommandPage() {
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "deg", text: "Good afternoon. I can read the projects, tasks and records you have access to. I'll always show my sources and ask before taking any action." },
+    { role: "deg", text: "Hello. I can read the projects, tasks and records you have access to. I'll always show my sources and ask before taking any action." },
   ]);
   const [draft, setDraft] = useState("");
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
