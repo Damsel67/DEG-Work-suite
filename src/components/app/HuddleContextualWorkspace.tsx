@@ -199,7 +199,7 @@ export function HuddleContextualWorkspace({
   initialView,
 }: {
   section: Section;
-  initialView?: string;
+  initialView?: string | undefined;
 }) {
   const { workspace } = useWorkspace();
   const [activeView, setActiveView] = useState(
@@ -517,7 +517,7 @@ function FilesBrowser({ destination }: { destination: string }) {
         <div className="flex items-center gap-1 rounded-md border border-border p-1">
           <Button
             variant={view === "list" ? "secondary" : "ghost"}
-            size="icon-sm"
+            size="icon"
             aria-label="List view"
             aria-pressed={view === "list"}
             onClick={() => setView("list")}
@@ -526,7 +526,7 @@ function FilesBrowser({ destination }: { destination: string }) {
           </Button>
           <Button
             variant={view === "grid" ? "secondary" : "ghost"}
-            size="icon-sm"
+            size="icon"
             aria-label="Grid view"
             aria-pressed={view === "grid"}
             onClick={() => setView("grid")}
@@ -704,7 +704,7 @@ function CalendarView({ selectedCalendar }: { selectedCalendar: string }) {
         <div className="flex items-center gap-1">
           <Button
             variant="outline"
-            size="icon-sm"
+            size="icon"
             aria-label="Previous week"
             onClick={() => shiftWeek(-1)}
           >
@@ -712,7 +712,7 @@ function CalendarView({ selectedCalendar }: { selectedCalendar: string }) {
           </Button>
           <Button
             variant="outline"
-            size="icon-sm"
+            size="icon"
             aria-label="Next week"
             onClick={() => shiftWeek(1)}
           >

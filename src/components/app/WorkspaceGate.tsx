@@ -41,7 +41,6 @@ export function WorkspaceGate({ children }: { children: ReactNode }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(getRecoveryLinkError);
   const [notice, setNotice] = useState("");
-  const supabase = createSupabaseBrowserClient();
 
   async function authenticate(event: FormEvent) {
     event.preventDefault();
@@ -50,13 +49,13 @@ export function WorkspaceGate({ children }: { children: ReactNode }) {
     setNotice("");
     try {
       if (mode === "recovery") {
-        const { error: recoveryError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        const { error: recoveryError } = await createSupabaseBrowserClient().auth.resetPasswordForEmail(email.trim(), {
           redirectTo: `${window.location.origin}/app?auth=recovery`,
         });
         if (recoveryError) throw recoveryError;
         setNotice("If an account exists for this email, a password reset link is on its way.");
       } else if (mode === "update-password" || recoveryMode) {
-        const { error: updateError } = await supabase.auth.updateUser({ password });
+        const { error: updateError } = await createSupabaseBrowserClient().auth.updateUser({ password });
         if (updateError) throw updateError;
         clearRecoveryMode();
         clearRecoveryUrl();
@@ -66,8 +65,8 @@ export function WorkspaceGate({ children }: { children: ReactNode }) {
       } else {
         const result =
           mode === "signin"
-            ? await supabase.auth.signInWithPassword({ email: email.trim(), password })
-            : await supabase.auth.signUp({ email: email.trim(), password });
+            ? await createSupabaseBrowserClient().auth.signInWithPassword({ email: email.trim(), password })
+            : await createSupabaseBrowserClient().auth.signUp({ email: email.trim(), password });
         if (result.error) throw result.error;
         if (mode === "signup" && !result.data.session) {
           setMode("signin");
@@ -100,7 +99,7 @@ export function WorkspaceGate({ children }: { children: ReactNode }) {
     setBusy(true);
     setError("");
     try {
-      const { error: workspaceError } = await supabase.rpc("create_workspace", {
+      const { error: workspaceError } = await createSupabaseBrowserClient().rpc("create_workspace", {
         workspace_name: workspaceName.trim(),
       });
       if (workspaceError) throw workspaceError;
@@ -331,7 +330,7 @@ export function WorkspaceGate({ children }: { children: ReactNode }) {
           type="button"
           className="mt-5 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           onClick={async () => {
-            await supabase.auth.signOut();
+            await createSupabaseBrowserClient().auth.signOut();
           }}
         >
           Sign out
