@@ -83,12 +83,12 @@ export function RemoteWork() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const checkedIn = presence.checkedInAt !== null;
-  const displayName = user?.user_metadata?.full_name || user?.email || "You";
+  const displayName = (user?.user_metadata?.["full_name"] as string | undefined) || user?.email || "You";
   const initials = displayName
     .split(/[\s@._-]+/)
     .filter(Boolean)
     .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
+    .map((part: string) => part[0]?.toUpperCase())
     .join("");
 
   useEffect(() => {

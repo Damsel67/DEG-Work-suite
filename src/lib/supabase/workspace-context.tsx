@@ -9,6 +9,7 @@ import {
 } from "react";
 import type { AuthChangeEvent, User } from "@supabase/supabase-js";
 import { createSupabaseBrowserClient } from "./client";
+import { isSupabaseConfigured, SUPABASE_NOT_CONFIGURED_MESSAGE } from "./config";
 
 export type Workspace = { id: string; name: string };
 type WorkspaceContextValue = {
@@ -46,12 +47,22 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
     return query.get("auth") === "recovery" || fragment.get("type") === "recovery";
   });
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const supabase = useMemo(
+    () => (isSupabaseConfigured() ? createSupabaseBrowserClient() : null),
+    [],
+  );
 
   const refresh = useCallback(async () => {
     setLoading(true);
     setLoadError(null);
     setLoadingStage("auth");
+    if (!supabase) {
+      setUser(null);
+      setWorkspaces([]);
+      setLoadError(SUPABASE_NOT_CONFIGURED_MESSAGE);
+      setLoading(false);
+      return;
+    }
     try {
       const {
         data: { user: activeUser },
@@ -87,6 +98,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         console.error("Unable to load your DEG WorkSuite workspace.", error);
       }
     });
+    if (!supabase) {
+      return () => {
+        mounted = false;
+      };
+    }
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {

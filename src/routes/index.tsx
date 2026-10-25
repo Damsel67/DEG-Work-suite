@@ -12,6 +12,7 @@ import type { LucideIcon } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { WorkspaceProvider, useWorkspace } from "@/lib/supabase/workspace-context";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured, SUPABASE_NOT_CONFIGURED_MESSAGE } from "@/lib/supabase/config";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -168,6 +169,14 @@ function Hero() {
 }
 
 function LiveWorkspacePanel() {
+  if (!isSupabaseConfigured()) {
+    return (
+      <div className="landing-v2__live-empty">
+        <h3>Your live workspace is almost ready.</h3>
+        <p>{SUPABASE_NOT_CONFIGURED_MESSAGE}</p>
+      </div>
+    );
+  }
   return <WorkspaceProvider><LiveWorkspaceTasks /></WorkspaceProvider>;
 }
 
