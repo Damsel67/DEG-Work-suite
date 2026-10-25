@@ -1,5 +1,5 @@
 import command from "@/assets/icons/deg-module-command.svg";
-import projects from "@/assets/icons/deg-module-projects.svg";
+import projects from "@/assets/icons/deg-module-orbit.svg";
 import tasks from "@/assets/icons/deg-module-tasks.svg";
 import relations from "@/assets/icons/deg-module-relations.svg";
 import support from "@/assets/icons/deg-module-support.svg";
@@ -10,9 +10,11 @@ import documents from "@/assets/icons/deg-module-documents.svg";
 import messages from "@/assets/icons/deg-module-messages.svg";
 import insights from "@/assets/icons/deg-module-insights.svg";
 import moments from "@/assets/icons/deg-module-moments.svg";
+import type { LucideIcon } from "lucide-react";
+import { MessagesSquare, Orbit } from "lucide-react";
 
 export type ModuleKey =
-  | "command"
+  | "nexa"
   | "projects"
   | "tasks"
   | "relations"
@@ -21,7 +23,7 @@ export type ModuleKey =
   | "automations"
   | "people"
   | "documents"
-  | "messages"
+  | "huddle"
   | "insights"
   | "moments";
 
@@ -31,8 +33,10 @@ export type ModuleMeta = {
   short: string;
   description: string;
   icon: string;
+  Icon?: LucideIcon;
+  status?: "Live" | "Prototype" | "Setup needed" | "Provider needed";
   to:
-    | "/app/command"
+    | "/app/nexa"
     | "/app/projects"
     | "/app/tasks"
     | "/app/relations"
@@ -41,7 +45,7 @@ export type ModuleMeta = {
     | "/app/automations"
     | "/app/people"
     | "/app/documents"
-    | "/app/messages"
+    | "/app"
     | "/app/insights"
     | "/app/moments";
   group: "intelligence" | "work" | "customers" | "operations" | "human";
@@ -49,20 +53,25 @@ export type ModuleMeta = {
 
 export const MODULES: ModuleMeta[] = [
   {
-    key: "command",
-    name: "DEG Command",
-    short: "Ask & approve",
-    description: "Ask questions about your work, get sourced answers, and approve every proposed action before it runs.",
+    key: "nexa",
+    name: "Nexa",
+    short: "AI assistance · Planning · Automation",
+    description:
+      "A workspace assistant for thinking, drafting, and approved next steps. AI provider setup is required before it can respond.",
     icon: command,
-    to: "/app/command",
+    Icon: Orbit,
+    status: "Provider needed",
+    to: "/app/nexa",
     group: "intelligence",
   },
   {
     key: "projects",
-    name: "Projects",
-    short: "Delivery & boards",
-    description: "Plan delivery with owners, milestones and a clear view of what is on track.",
+    name: "Orbit",
+    short: "Projects, tasks & workflows",
+    description:
+      "Manage projects, tasks, deadlines, milestones, dependencies, and workflow progress.",
     icon: projects,
+    status: "Live",
     to: "/app/projects",
     group: "work",
   },
@@ -72,6 +81,7 @@ export const MODULES: ModuleMeta[] = [
     short: "To-dos",
     description: "Assign, prioritise and complete the day's work with status everyone can trust.",
     icon: tasks,
+    status: "Live",
     to: "/app/tasks",
     group: "work",
   },
@@ -81,16 +91,19 @@ export const MODULES: ModuleMeta[] = [
     short: "Files & notes",
     description: "Private files and shared notes with access checked on every path.",
     icon: documents,
+    status: "Prototype",
     to: "/app/documents",
     group: "work",
   },
   {
-    key: "messages",
-    name: "Messages",
-    short: "Conversations",
-    description: "Team conversations tied to the work they are about.",
+    key: "huddle",
+    name: "Huddle",
+    short: "Your team's office, everywhere",
+    description: "Team conversations and collaboration. Messaging storage is not configured yet.",
     icon: messages,
-    to: "/app/messages",
+    Icon: MessagesSquare,
+    status: "Setup needed",
+    to: "/app",
     group: "work",
   },
   {
@@ -99,6 +112,7 @@ export const MODULES: ModuleMeta[] = [
     short: "Clients & CRM",
     description: "Contacts, companies and deals with a history of every interaction.",
     icon: relations,
+    status: "Prototype",
     to: "/app/relations",
     group: "customers",
   },
@@ -108,6 +122,7 @@ export const MODULES: ModuleMeta[] = [
     short: "Tickets",
     description: "Service requests with owners, SLA timestamps and unmistakable internal notes.",
     icon: support,
+    status: "Prototype",
     to: "/app/support",
     group: "customers",
   },
@@ -117,6 +132,7 @@ export const MODULES: ModuleMeta[] = [
     short: "Invoices",
     description: "Invoices and payments that reconcile to the records underneath.",
     icon: finance,
+    status: "Prototype",
     to: "/app/finance",
     group: "operations",
   },
@@ -126,6 +142,7 @@ export const MODULES: ModuleMeta[] = [
     short: "Flowline workflows",
     description: "Repeatable workflows with run history, retries and visible failure alerts.",
     icon: automations,
+    status: "Prototype",
     to: "/app/automations",
     group: "operations",
   },
@@ -135,6 +152,7 @@ export const MODULES: ModuleMeta[] = [
     short: "Reports",
     description: "Calm reports on delivery, customers and cash — traceable to source.",
     icon: insights,
+    status: "Prototype",
     to: "/app/insights",
     group: "operations",
   },
@@ -144,6 +162,7 @@ export const MODULES: ModuleMeta[] = [
     short: "Team & roles",
     description: "Members, roles and invitations with secure workspace boundaries.",
     icon: people,
+    status: "Prototype",
     to: "/app/people",
     group: "operations",
   },
@@ -151,8 +170,10 @@ export const MODULES: ModuleMeta[] = [
     key: "moments",
     name: "DEG Moments",
     short: "Private journal",
-    description: "A quiet space to reflect. Private by default — never visible to admins or AI unless you share.",
+    description:
+      "A quiet space to reflect. Private by default — never visible to admins or AI unless you share.",
     icon: moments,
+    status: "Prototype",
     to: "/app/moments",
     group: "human",
   },
@@ -161,9 +182,10 @@ export const MODULES: ModuleMeta[] = [
 export const moduleByKey = (k: ModuleKey) => MODULES.find((m) => m.key === k)!;
 
 export const NAV_GROUPS: { label: string; keys: ModuleKey[] }[] = [
-  { label: "Intelligence", keys: ["command"] },
-  { label: "Work", keys: ["projects", "tasks", "documents", "messages"] },
+  { label: "Intelligence", keys: ["nexa"] },
+  { label: "Work", keys: ["projects", "tasks", "documents"] },
   { label: "Customers", keys: ["relations", "support"] },
   { label: "Operations", keys: ["finance", "automations", "insights", "people"] },
   { label: "Personal", keys: ["moments"] },
 ];
+

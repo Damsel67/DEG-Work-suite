@@ -1,115 +1,209 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Initials, PageHeader, StatusBadge } from "@/components/app/ui";
-import { tasks as seed, type Priority, type TaskStatus } from "@/lib/sample-data";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PageHeader } from "@/components/app/ui";
+import { useWorkspace } from "@/lib/supabase/workspace-context";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { pageHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
+type Project = { id: string; name: string };
+type Task = {
+  id: string;
+  title: string;
+  project_id: string;
+  is_completed: boolean;
+  created_at: string;
+};
 export const Route = createFileRoute("/app/tasks")({
-  head: () => pageHead("Tasks", "Assign, prioritise and complete the day's work across every project."),
+  head: () => pageHead("Tasks", "Create and complete tasks in your projects."),
   component: TasksPage,
 });
 
-const STATUSES: TaskStatus[] = ["To do", "In progress", "In review", "Done"];
-
 function TasksPage() {
-  const [items, setItems] = useState(seed);
-  const [filter, setFilter] = useState<"all" | TaskStatus>("all");
+  const { workspace } = useWorkspace();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [items, setItems] = useState<Task[]>([]);
+  const [projectId, setProjectId] = useState("");
+  const [filter, setFilter] = useState<"all" | "open" | "done">("all");
   const [title, setTitle] = useState("");
+  const [busy, setBusy] = useState(false);
+  const supabase = createSupabaseBrowserClient();
 
-  const visible = useMemo(() => (filter === "all" ? items : items.filter((t) => t.status === filter)), [items, filter]);
-  const done = items.filter((t) => t.status === "Done").length;
-
-  const setStatus = (id: string, status: TaskStatus) => setItems((xs) => xs.map((t) => (t.id === id ? { ...t, status } : t)));
-
-  const add = () => {
-    if (!title.trim()) {
-      toast.error("A task needs a title");
+  const loadProjects = useCallback(async () => {
+    if (!workspace) return;
+    const { data, error } = await supabase
+      .from("projects")
+      .select("id, name")
+      .eq("workspace_id", workspace.id)
+      .order("created_at");
+    if (error) throw error;
+    const next = (data ?? []) as Project[];
+    setProjects(next);
+    setProjectId((current) => (next.some((p) => p.id === current) ? current : (next[0]?.id ?? "")));
+  }, [supabase, workspace]);
+  const loadTasks = useCallback(async () => {
+    if (!projectId) {
+      setItems([]);
       return;
     }
-    setItems((xs) => [
-      { id: `t${Date.now()}`, title: title.trim(), project: "Unassigned", assignee: "Adaeze Okafor", priority: "Normal" as Priority, status: "To do", due: "No date" },
-      ...xs,
-    ]);
-    setTitle("");
-    toast.success("Task added");
-  };
+    const { data, error } = await supabase
+      .from("tasks")
+      .select("id, title, project_id, is_completed, created_at")
+      .eq("project_id", projectId)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    setItems(data ?? []);
+  }, [projectId, supabase]);
+  useEffect(() => {
+    void loadProjects().catch((e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Could not load projects."),
+    );
+  }, [loadProjects]);
+  useEffect(() => {
+    void loadTasks().catch((e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Could not load tasks."),
+    );
+  }, [loadTasks]);
+  const visible = useMemo(
+    () => items.filter((t) => filter === "all" || (filter === "done") === t.is_completed),
+    [items, filter],
+  );
+  const done = items.filter((t) => t.is_completed).length;
+
+  async function add(event: FormEvent) {
+    event.preventDefault();
+    if (!projectId || !title.trim()) return;
+    setBusy(true);
+    try {
+      const { error } = await supabase
+        .from("tasks")
+        .insert({ project_id: projectId, title: title.trim() });
+      if (error) throw error;
+      setTitle("");
+      await loadTasks();
+      toast.success("Task added");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not add task.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function setCompleted(task: Task, completed: boolean) {
+    const { error } = await supabase
+      .from("tasks")
+      .update({ is_completed: completed })
+      .eq("id", task.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setItems((current) =>
+      current.map((item) => (item.id === task.id ? { ...item, is_completed: completed } : item)),
+    );
+  }
 
   return (
     <div className="space-y-8">
-      <PageHeader module="tasks" title="Tasks" description={`${done} of ${items.length} complete`} />
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          add();
-        }}
-        className="surface flex flex-col gap-3 p-3 sm:flex-row"
-      >
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Add a task…" aria-label="New task title" className="border-0 bg-transparent shadow-none focus-visible:ring-0" />
-        <Button type="submit"><Plus /> Add task</Button>
-      </form>
-
-      <div className="flex flex-wrap items-center gap-2">
-        {(["all", ...STATUSES] as const).map((s) => (
-          <button
-            key={s}
-            onClick={() => setFilter(s)}
-            aria-pressed={filter === s}
-            className={cn(
-              "rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
-              filter === s ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-accent",
+      <PageHeader
+        module="tasks"
+        title="Tasks"
+        description={`${done} of ${items.length} complete`}
+      />
+      {projects.length === 0 ? (
+        <div className="surface p-8 text-center">
+          <p className="font-medium">Create a project first</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Tasks belong to a project in your workspace.
+          </p>
+        </div>
+      ) : (
+        <>
+          <label className="flex max-w-sm items-center gap-3 text-sm">
+            <span className="shrink-0 text-muted-foreground">Project</span>
+            <Select value={projectId} onValueChange={setProjectId}>
+              <SelectTrigger aria-label="Project">
+                <SelectValue placeholder="Choose project" />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
+          <form onSubmit={add} className="surface flex flex-col gap-3 p-3 sm:flex-row">
+            <Input
+              required
+              maxLength={240}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Add a task…"
+              aria-label="New task title"
+              className="border-0 bg-transparent shadow-none focus-visible:ring-0"
+            />
+            <Button type="submit" disabled={busy || !projectId}>
+              <Plus /> Add task
+            </Button>
+          </form>
+          <div className="flex flex-wrap items-center gap-2">
+            {(["all", "open", "done"] as const).map((s) => (
+              <button
+                key={s}
+                onClick={() => setFilter(s)}
+                aria-pressed={filter === s}
+                className={cn(
+                  "rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
+                  filter === s
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border hover:bg-accent",
+                )}
+              >
+                {s === "all" ? "All" : s === "open" ? "To do" : "Done"}
+              </button>
+            ))}
+          </div>
+          <ul className="surface divide-y divide-border overflow-hidden">
+            {visible.length === 0 && (
+              <li className="p-8 text-center text-sm text-muted-foreground">
+                No tasks in this view.
+              </li>
             )}
-          >
-            {s === "all" ? "All" : s}
-          </button>
-        ))}
-        {filter !== "all" && (
-          <button onClick={() => setFilter("all")} className="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline">
-            Reset
-          </button>
-        )}
-      </div>
-
-      <ul className="surface divide-y divide-border overflow-hidden">
-        {visible.length === 0 && <li className="p-8 text-center text-sm text-muted-foreground">No tasks with this status.</li>}
-        {visible.map((t) => (
-          <li key={t.id} className="flex flex-col gap-3 px-5 py-4 md:flex-row md:items-center">
-            <div className="flex min-w-0 flex-1 items-start gap-3">
-              <Checkbox
-                checked={t.status === "Done"}
-                onCheckedChange={(c) => setStatus(t.id, c ? "Done" : "To do")}
-                aria-label={t.status === "Done" ? `Reopen ${t.title}` : `Complete ${t.title}`}
-                className="mt-0.5"
-              />
-              <div className="min-w-0">
-                <p className={cn("font-medium", t.status === "Done" && "text-muted-foreground line-through")}>{t.title}</p>
-                <p className="text-xs text-muted-foreground">{t.project} · due {t.due}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 pl-7 md:pl-0">
-              <StatusBadge value={t.priority} />
-              <span className="flex items-center gap-2 text-sm"><Initials name={t.assignee} /><span className="hidden lg:inline">{t.assignee}</span></span>
-              <Select value={t.status} onValueChange={(v) => setStatus(t.id, v as TaskStatus)}>
-                <SelectTrigger className="h-8 w-[130px] bg-background text-xs" aria-label="Status">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATUSES.map((s) => (
-                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </li>
-        ))}
-      </ul>
+            {visible.map((task) => (
+              <li key={task.id} className="flex items-center gap-3 px-5 py-4">
+                <Checkbox
+                  checked={task.is_completed}
+                  onCheckedChange={(checked) => void setCompleted(task, checked === true)}
+                  aria-label={task.is_completed ? `Reopen ${task.title}` : `Complete ${task.title}`}
+                />
+                <p
+                  className={cn(
+                    "font-medium",
+                    task.is_completed && "text-muted-foreground line-through",
+                  )}
+                >
+                  {task.title}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
+

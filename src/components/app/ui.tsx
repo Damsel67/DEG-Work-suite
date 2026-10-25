@@ -3,6 +3,7 @@ import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { ModuleKey } from "@/lib/modules";
 import { moduleByKey } from "@/lib/modules";
+import { ModuleGlyph } from "@/components/app/ModuleGlyph";
 
 export function PageHeader({
   module,
@@ -19,7 +20,7 @@ export function PageHeader({
   return (
     <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
       <div className="flex items-center gap-4">
-        {m && <img src={m.icon} alt="" width={512} height={512} className="size-14 rounded-[26%] shadow-soft" />}
+        {m && <ModuleGlyph module={m} className="size-14 text-primary" />}
         <div>
           <h1 className="font-display text-3xl font-normal md:text-4xl">{title}</h1>
           {description && <p className="mt-1 text-muted-foreground">{description}</p>}
@@ -118,3 +119,4 @@ export function Initials({ name }: { name: string }) {
     </span>
   );
 }
+

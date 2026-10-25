@@ -1,107 +1,116 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Lock, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { ArrowRight, CheckCircle2, FolderKanban, ListChecks, MessagesSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Panel, StatCard, StatusBadge } from "@/components/app/ui";
-import { automations, projects, proposals, tasks, tickets } from "@/lib/sample-data";
+import { PageHeader, StatCard } from "@/components/app/ui";
+import { useWorkspace } from "@/lib/supabase/workspace-context";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { pageHead } from "@/lib/seo";
-import { moduleByKey } from "@/lib/modules";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/")({
-  head: () => pageHead("Home", "Your priorities, projects, requests and AI proposals at a glance."),
+  head: () => pageHead("Huddle", "Your team's office, everywhere."),
   component: Dashboard,
 });
 
-function greeting(h: number) {
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
-}
-
 function Dashboard() {
-  const [hello, setHello] = useState("Welcome back");
-  useEffect(() => setHello(greeting(new Date().getHours())), []);
-
-  const priority = tasks.filter((t) => (t.priority === "Urgent" || t.priority === "High") && t.status !== "Done");
-  const open = tickets.filter((t) => t.status !== "Resolved");
-  const health = Math.round(automations.reduce((s, a) => s + a.success, 0) / automations.length);
+  const { workspace } = useWorkspace();
+  const [projectCount, setProjectCount] = useState(0);
+  const [taskCount, setTaskCount] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
+  const supabase = createSupabaseBrowserClient();
+  const load = useCallback(async () => {
+    if (!workspace) return;
+    const { data: projects, error: projectError } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("workspace_id", workspace.id);
+    if (projectError) throw projectError;
+    const projectIds = ((projects ?? []) as { id: string }[]).map((project) => project.id);
+    setProjectCount(projectIds.length);
+    if (projectIds.length === 0) {
+      setTaskCount(0);
+      setCompletedCount(0);
+      return;
+    }
+    const { data: tasks, error: taskError } = await supabase
+      .from("tasks")
+      .select("id, is_completed")
+      .in("project_id", projectIds);
+    if (taskError) throw taskError;
+    const savedTasks = (tasks ?? []) as { id: string; is_completed: boolean }[];
+    setTaskCount(savedTasks.length);
+    setCompletedCount(savedTasks.filter((task) => task.is_completed).length);
+  }, [supabase, workspace]);
+  useEffect(() => {
+    void load().catch((error: unknown) =>
+      toast.error(error instanceof Error ? error.message : "Could not load your workspace."),
+    );
+  }, [load]);
 
   return (
     <div className="space-y-8 animate-rise">
-      <div>
-        <h1 className="font-display text-4xl font-normal md:text-5xl">{hello}, Adaeze</h1>
-        <p className="mt-2 text-muted-foreground">Your work, priorities and intelligence in one place.</p>
+      <PageHeader module="huddle" title="Huddle" description="Your team's office, everywhere." />
+      <p className="eyebrow">{workspace?.name}</p>
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+        <StatCard
+          label="Projects"
+          value={String(projectCount).padStart(2, "0")}
+          hint="In this workspace"
+        />
+        <StatCard
+          label="Tasks"
+          value={String(taskCount).padStart(2, "0")}
+          hint="Across your projects"
+        />
+        <StatCard
+          label="Completed"
+          value={String(completedCount).padStart(2, "0")}
+          hint="Tasks marked done"
+        />
       </div>
-
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Priority tasks" value={String(priority.length).padStart(2, "0")} hint="Urgent or high, not done" />
-        <StatCard label="Active projects" value={String(projects.length).padStart(2, "0")} hint="1 blocked, 1 at risk" />
-        <StatCard label="Open requests" value={String(open.length).padStart(2, "0")} hint="1 past SLA" />
-        <StatCard label="Automation health" value={`${health}%`} hint="Successful runs, last 30 days" />
-      </div>
-
-      <div className="grid gap-5 lg:grid-cols-[1.25fr_1fr]">
-        <Panel title="DEG Command" action={<span className="text-xs text-muted-foreground">{proposals.length} awaiting review</span>}>
-          <div className="p-5">
-            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-              <Sparkles className="size-3.5 text-highlight" /> Proposal
-            </div>
-            <p className="mt-2 text-lg font-semibold">{proposals[0]?.title}</p>
-            <p className="mt-1 text-sm text-muted-foreground">Draft ready · Review before sending</p>
-            <Button asChild className="mt-5">
-              <Link to="/app/command">Review proposal</Link>
-            </Button>
-          </div>
-        </Panel>
-
-        <section className="moments surface overflow-hidden">
-          <div className="flex items-center justify-between border-b border-border px-5 py-4">
-            <h2 className="font-semibold text-primary">DEG Moments</h2>
-            <img src={moduleByKey("moments").icon} alt="" className="size-7 rounded-lg" />
-          </div>
-          <div className="p-5">
-            <p className="font-medium">A quiet space to reflect</p>
-            <Link
-              to="/app/moments"
-              className="mt-4 flex items-center justify-between rounded-xl bg-secondary px-4 py-5 text-sm text-secondary-foreground transition-colors hover:bg-accent"
-            >
-              <span className="flex items-center gap-2"><Lock className="size-4" /> My Journal · Private by default</span>
-              <ArrowRight className="size-4" />
+      <div className="grid gap-5 md:grid-cols-2">
+        <section className="surface p-6">
+          <FolderKanban className="size-6 text-primary" />
+          <h2 className="mt-4 font-display text-2xl">Projects</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Create a project to organise the work you want to complete.
+          </p>
+          <Button asChild className="mt-5">
+            <Link to="/app/projects">
+              Open projects <ArrowRight />
             </Link>
-          </div>
+          </Button>
+        </section>
+        <section className="surface p-6">
+          <ListChecks className="size-6 text-primary" />
+          <h2 className="mt-4 font-display text-2xl">Tasks</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Add tasks to a project and mark each one complete as you go.
+          </p>
+          <Button asChild className="mt-5">
+            <Link to="/app/tasks">
+              Open tasks <CheckCircle2 />
+            </Link>
+          </Button>
         </section>
       </div>
-
-      <div className="grid gap-5 lg:grid-cols-2">
-        <Panel title="Priority tasks" action={<Link to="/app/tasks" className="text-sm font-semibold text-primary hover:underline">All tasks</Link>}>
-          <ul className="divide-y divide-border">
-            {priority.map((t) => (
-              <li key={t.id} className="flex items-center justify-between gap-3 px-5 py-3.5">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{t.title}</p>
-                  <p className="text-xs text-muted-foreground">{t.project} · due {t.due}</p>
-                </div>
-                <StatusBadge value={t.priority} />
-              </li>
-            ))}
-          </ul>
-        </Panel>
-        <Panel title="Projects" action={<Link to="/app/projects" className="text-sm font-semibold text-primary hover:underline">All projects</Link>}>
-          <ul className="divide-y divide-border">
-            {projects.slice(0, 4).map((p) => (
-              <li key={p.id} className="px-5 py-3.5">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-sm font-medium">{p.name}</p>
-                  <StatusBadge value={p.status} />
-                </div>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-primary" style={{ width: `${p.progress}%` }} />
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Panel>
-      </div>
+      <section
+        className="surface flex items-start gap-4 border border-border p-6"
+        aria-labelledby="huddle-setup-title"
+      >
+        <MessagesSquare className="mt-1 size-5 shrink-0 text-primary" aria-hidden="true" />
+        <div>
+          <h2 id="huddle-setup-title" className="font-semibold">
+            Huddle messaging needs database setup
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+            The connected Supabase project currently has no Huddle conversation or channel tables.
+            No sample messages, unread counts, people, or activity are shown as real.
+          </p>
+        </div>
+      </section>
     </div>
   );
 }
+

@@ -19,6 +19,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
             <Logo className="h-8 md:h-9" />
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
+            <a href="/#how-it-works" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              Product
+            </a>
             {NAV.map((n) => (
               <Link
                 key={n.to}
@@ -32,21 +35,25 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            <Link to="/app" className="hidden px-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline-flex">
+              Sign in
+            </Link>
             <Button asChild variant="hero" size="default" className="hidden sm:inline-flex">
               <Link to="/app">
-                Open prototype <ArrowRight />
+                Get started <ArrowRight />
               </Link>
             </Button>
           </div>
         </div>
         <nav className="flex items-center gap-6 border-t border-border/50 px-5 py-2 md:hidden">
+          <a href="/#how-it-works" className="text-sm font-medium text-muted-foreground">Product</a>
           {NAV.map((n) => (
             <Link key={n.to} to={n.to} className="text-sm font-medium text-muted-foreground" activeProps={{ className: "text-foreground" }}>
               {n.label}
             </Link>
           ))}
           <Link to="/app" className="ml-auto text-sm font-semibold text-foreground">
-            Prototype →
+            Get started →
           </Link>
         </nav>
       </header>
@@ -63,7 +70,7 @@ function SiteFooter() {
         <div>
           <Logo tagline className="h-14" />
           <p className="mt-5 max-w-sm text-sm text-muted-foreground">
-            A proposed product in active design. Features shown in the prototype use sample data and are not yet live.
+            A focused workspace for the projects and tasks that move your work forward.
           </p>
         </div>
         <div>
@@ -71,15 +78,15 @@ function SiteFooter() {
           <ul className="mt-4 space-y-2 text-sm">
             <li><Link to="/modules" className="hover:underline">Modules</Link></li>
             <li><Link to="/trust" className="hover:underline">Privacy & trust</Link></li>
-            <li><Link to="/app" className="hover:underline">Open the prototype</Link></li>
+            <li><Link to="/app" className="hover:underline">Create your workspace</Link></li>
           </ul>
         </div>
         <div>
-          <p className="eyebrow">Inside the prototype</p>
+          <p className="eyebrow">Your work</p>
           <ul className="mt-4 space-y-2 text-sm">
-            <li><Link to="/app/command" className="hover:underline">DEG Command</Link></li>
             <li><Link to="/app/projects" className="hover:underline">Projects</Link></li>
-            <li><Link to="/app/moments" className="hover:underline">DEG Moments</Link></li>
+            <li><Link to="/app/tasks" className="hover:underline">Tasks</Link></li>
+            <li><Link to="/app" className="hover:underline">Workspace</Link></li>
           </ul>
         </div>
       </div>
@@ -91,3 +98,4 @@ function SiteFooter() {
     </footer>
   );
 }
+

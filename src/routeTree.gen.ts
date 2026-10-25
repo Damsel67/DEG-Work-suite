@@ -21,12 +21,14 @@ import { Route as AppFinanceRouteImport } from './routes/app.finance'
 import { Route as AppInsightsRouteImport } from './routes/app.insights'
 import { Route as AppMessagesRouteImport } from './routes/app.messages'
 import { Route as AppMomentsRouteImport } from './routes/app.moments'
+import { Route as AppNexaRouteImport } from './routes/app.nexa'
 import { Route as AppPeopleRouteImport } from './routes/app.people'
 import { Route as AppProjectsRouteImport } from './routes/app.projects'
 import { Route as AppRelationsRouteImport } from './routes/app.relations'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppSupportRouteImport } from './routes/app.support'
 import { Route as AppTasksRouteImport } from './routes/app.tasks'
+import { Route as AppHuddleSectionRouteImport } from './routes/app.huddle.$section'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -88,6 +90,11 @@ const AppMomentsRoute = AppMomentsRouteImport.update({
   path: '/moments',
   getParentRoute: () => AppRoute,
 } as any)
+const AppNexaRoute = AppNexaRouteImport.update({
+  id: '/nexa',
+  path: '/nexa',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPeopleRoute = AppPeopleRouteImport.update({
   id: '/people',
   path: '/people',
@@ -118,6 +125,11 @@ const AppTasksRoute = AppTasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => AppRoute,
 } as any)
+const AppHuddleSectionRoute = AppHuddleSectionRouteImport.update({
+  id: '/huddle/$section',
+  path: '/huddle/$section',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/app/insights': typeof AppInsightsRoute
   '/app/messages': typeof AppMessagesRoute
   '/app/moments': typeof AppMomentsRoute
+  '/app/nexa': typeof AppNexaRoute
   '/app/people': typeof AppPeopleRoute
   '/app/projects': typeof AppProjectsRoute
   '/app/relations': typeof AppRelationsRoute
@@ -138,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/app/support': typeof AppSupportRoute
   '/app/tasks': typeof AppTasksRoute
   '/app/': typeof AppIndexRoute
+  '/app/huddle/$section': typeof AppHuddleSectionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +164,7 @@ export interface FileRoutesByTo {
   '/app/insights': typeof AppInsightsRoute
   '/app/messages': typeof AppMessagesRoute
   '/app/moments': typeof AppMomentsRoute
+  '/app/nexa': typeof AppNexaRoute
   '/app/people': typeof AppPeopleRoute
   '/app/projects': typeof AppProjectsRoute
   '/app/relations': typeof AppRelationsRoute
@@ -157,6 +172,7 @@ export interface FileRoutesByTo {
   '/app/support': typeof AppSupportRoute
   '/app/tasks': typeof AppTasksRoute
   '/app': typeof AppIndexRoute
+  '/app/huddle/$section': typeof AppHuddleSectionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -171,6 +187,7 @@ export interface FileRoutesById {
   '/app/insights': typeof AppInsightsRoute
   '/app/messages': typeof AppMessagesRoute
   '/app/moments': typeof AppMomentsRoute
+  '/app/nexa': typeof AppNexaRoute
   '/app/people': typeof AppPeopleRoute
   '/app/projects': typeof AppProjectsRoute
   '/app/relations': typeof AppRelationsRoute
@@ -178,6 +195,7 @@ export interface FileRoutesById {
   '/app/support': typeof AppSupportRoute
   '/app/tasks': typeof AppTasksRoute
   '/app/': typeof AppIndexRoute
+  '/app/huddle/$section': typeof AppHuddleSectionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -193,6 +211,7 @@ export interface FileRouteTypes {
     | '/app/insights'
     | '/app/messages'
     | '/app/moments'
+    | '/app/nexa'
     | '/app/people'
     | '/app/projects'
     | '/app/relations'
@@ -200,6 +219,7 @@ export interface FileRouteTypes {
     | '/app/support'
     | '/app/tasks'
     | '/app/'
+    | '/app/huddle/$section'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -212,6 +232,7 @@ export interface FileRouteTypes {
     | '/app/insights'
     | '/app/messages'
     | '/app/moments'
+    | '/app/nexa'
     | '/app/people'
     | '/app/projects'
     | '/app/relations'
@@ -219,6 +240,7 @@ export interface FileRouteTypes {
     | '/app/support'
     | '/app/tasks'
     | '/app'
+    | '/app/huddle/$section'
   id:
     | '__root__'
     | '/'
@@ -232,6 +254,7 @@ export interface FileRouteTypes {
     | '/app/insights'
     | '/app/messages'
     | '/app/moments'
+    | '/app/nexa'
     | '/app/people'
     | '/app/projects'
     | '/app/relations'
@@ -239,6 +262,7 @@ export interface FileRouteTypes {
     | '/app/support'
     | '/app/tasks'
     | '/app/'
+    | '/app/huddle/$section'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -334,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMomentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/nexa': {
+      id: '/app/nexa'
+      path: '/nexa'
+      fullPath: '/app/nexa'
+      preLoaderRoute: typeof AppNexaRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/people': {
       id: '/app/people'
       path: '/people'
@@ -376,6 +407,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTasksRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/huddle/$section': {
+      id: '/app/huddle/$section'
+      path: '/huddle/$section'
+      fullPath: '/app/huddle/$section'
+      preLoaderRoute: typeof AppHuddleSectionRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -387,6 +425,7 @@ interface AppRouteChildren {
   AppInsightsRoute: typeof AppInsightsRoute
   AppMessagesRoute: typeof AppMessagesRoute
   AppMomentsRoute: typeof AppMomentsRoute
+  AppNexaRoute: typeof AppNexaRoute
   AppPeopleRoute: typeof AppPeopleRoute
   AppProjectsRoute: typeof AppProjectsRoute
   AppRelationsRoute: typeof AppRelationsRoute
@@ -394,6 +433,7 @@ interface AppRouteChildren {
   AppSupportRoute: typeof AppSupportRoute
   AppTasksRoute: typeof AppTasksRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppHuddleSectionRoute: typeof AppHuddleSectionRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -404,6 +444,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppInsightsRoute: AppInsightsRoute,
   AppMessagesRoute: AppMessagesRoute,
   AppMomentsRoute: AppMomentsRoute,
+  AppNexaRoute: AppNexaRoute,
   AppPeopleRoute: AppPeopleRoute,
   AppProjectsRoute: AppProjectsRoute,
   AppRelationsRoute: AppRelationsRoute,
@@ -411,6 +452,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSupportRoute: AppSupportRoute,
   AppTasksRoute: AppTasksRoute,
   AppIndexRoute: AppIndexRoute,
+  AppHuddleSectionRoute: AppHuddleSectionRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -434,3 +476,4 @@ declare module '@tanstack/react-start' {
     config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }
+

@@ -17,8 +17,22 @@ describe("App routing", () => {
 });
 
 describe("Prototype routing", () => {
-  it.each(["/app", "/app/command", "/app/moments", "/modules", "/trust"])("matches %s", (path) => {
+  it.each([
+    "/app",
+    "/app/huddle/chats",
+    "/app/huddle/channels",
+    "/app/huddle/meetings",
+    "/app/projects",
+    "/app/tasks",
+    "/app/command",
+    "/app/nexa",
+    "/app/messages",
+    "/app/moments",
+    "/modules",
+    "/trust",
+  ])("matches %s", (path) => {
     const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
     expect(router.matchRoutes(path).at(-1)?.routeId).not.toBe(rootRouteId);
   });
 });
+

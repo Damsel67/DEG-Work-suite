@@ -22,7 +22,7 @@ export const Route = createFileRoute("/trust")({
 });
 
 const PRINCIPLES = [
-  { icon: ShieldCheck, title: "No silent AI actions", body: "DEG Command proposes. A person with the right permission approves. Rejected or expired proposals never run." },
+  { icon: ShieldCheck, title: "No silent AI actions", body: "Nexa is designed to require a person with the right permission to approve consequential actions." },
   { icon: Eye, title: "Answers show their sources", body: "Every AI answer links to the exact records and files it used — and only ones you are allowed to open." },
   { icon: KeyRound, title: "Workspaces never mix", body: "Each organisation's data is kept separate, and switching workspace reloads only what you are authorised to see." },
   { icon: FileClock, title: "Everything important is logged", body: "Approvals, exports, role changes and sensitive edits record who did what, and when." },
@@ -58,8 +58,8 @@ function TrustPage() {
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-5 py-16 md:flex-row md:items-center md:px-8">
           <h2 className="max-w-xl font-display text-3xl font-light md:text-4xl">See the approval flow for yourself.</h2>
           <Button asChild variant="onImage" size="lg">
-            <Link to="/app/command">
-              Open DEG Command <ArrowRight />
+            <Link to="/app/nexa">
+              Meet Nexa <ArrowRight />
             </Link>
           </Button>
         </div>
@@ -67,3 +67,4 @@ function TrustPage() {
     </SiteShell>
   );
 }
+

@@ -63,8 +63,8 @@ function SettingsPage() {
         <Panel title="Privacy & AI" className="lg:col-span-2">
           <ul className="divide-y divide-border">
             {[
-              { id: "ai-approval", label: "Require approval for every DEG Command action", desc: "Locked on — AI never acts silently.", on: true, locked: true },
-              { id: "journal-ai", label: "Let DEG Command read my journal", desc: "Off by default. Moments stay private unless you share.", on: false },
+              { id: "ai-approval", label: "Require approval for every Nexa action", desc: "Locked on — AI never acts silently.", on: true, locked: true },
+              { id: "journal-ai", label: "Let Nexa read my journal", desc: "Off by default. Moments stay private unless you share.", on: false },
               { id: "push", label: "Show message content in push notifications", desc: "Off by default to protect sensitive information.", on: false },
             ].map((s) => (
               <li key={s.id} className="flex items-center justify-between gap-6 px-5 py-4">
@@ -81,3 +81,4 @@ function SettingsPage() {
     </div>
   );
 }
+

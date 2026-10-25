@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { MODULES, NAV_GROUPS, moduleByKey } from "@/lib/modules";
+import { ModuleGlyph } from "@/components/app/ModuleGlyph";
 
 export const Route = createFileRoute("/modules")({
   head: () => ({
@@ -10,7 +11,7 @@ export const Route = createFileRoute("/modules")({
       {
         name: "description",
         content:
-          "Twelve connected modules: DEG Command, Projects, Tasks, Relations, Support, Finance, Automations, People, Documents, Messages, Insights and DEG Moments.",
+          "DEG WorkSuite applications for focused work, communication, planning, and personal reflection.",
       },
       { property: "og:title", content: "Modules — DEG WorkSuite" },
       { property: "og:description", content: "Every DEG WorkSuite module, from projects and CRM to finance and a private journal." },
@@ -30,8 +31,7 @@ function ModulesPage() {
           One family of tools, sharing one arch.
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-          {MODULES.length} modules built on the same navigation, permissions and audit trail — so adding one never means
-          learning a new product.
+          Each application shares the same workspace and navigation. Availability is labelled clearly so you can see what is live and what still needs setup.
         </p>
       </section>
 
@@ -48,10 +48,15 @@ function ModulesPage() {
                     to={m.to}
                     className="surface group flex items-start gap-5 p-6 transition-all hover:-translate-y-0.5 hover:shadow-lift"
                   >
-                    <img src={m.icon} alt="" width={512} height={512} loading="lazy" className="size-16 shrink-0 rounded-[26%]" />
+                    <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+                      <ModuleGlyph module={m} className="size-8 text-primary" />
+                    </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-3">
                         <h3 className="text-lg font-semibold">{m.name}</h3>
+                        <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                          {m.status ?? "Prototype"}
+                        </span>
                         <ArrowUpRight className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                       </div>
                       <p className="text-sm font-medium text-muted-foreground">{m.short}</p>
@@ -67,3 +72,4 @@ function ModulesPage() {
     </SiteShell>
   );
 }
+

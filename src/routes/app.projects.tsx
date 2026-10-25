@@ -1,101 +1,135 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { LayoutGrid, List, Plus } from "lucide-react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { Plus, LayoutGrid, List } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Initials, PageHeader, StatusBadge } from "@/components/app/ui";
-import { projects } from "@/lib/sample-data";
+import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/app/ui";
+import { useWorkspace } from "@/lib/supabase/workspace-context";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { pageHead } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
+type Project = { id: string; name: string; created_at: string };
 export const Route = createFileRoute("/app/projects")({
-  head: () => pageHead("Projects", "Plan delivery with owners, progress and due dates across every client project."),
+  head: () => pageHead("Projects", "Create and manage projects in your private workspace."),
   component: ProjectsPage,
 });
 
 function ProjectsPage() {
+  const { workspace } = useWorkspace();
+  const [items, setItems] = useState<Project[]>([]);
+  const [name, setName] = useState("");
   const [view, setView] = useState<"cards" | "list">("cards");
+  const [busy, setBusy] = useState(false);
+  const supabase = createSupabaseBrowserClient();
+  const load = useCallback(async () => {
+    if (!workspace) return;
+    const { data, error } = await supabase
+      .from("projects")
+      .select("id, name, created_at")
+      .eq("workspace_id", workspace.id)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    setItems(data ?? []);
+  }, [supabase, workspace]);
+  useEffect(() => {
+    void load().catch((e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Could not load projects."),
+    );
+  }, [load]);
+
+  async function addProject(event: FormEvent) {
+    event.preventDefault();
+    if (!workspace || !name.trim()) return;
+    setBusy(true);
+    try {
+      const { error } = await supabase
+        .from("projects")
+        .insert({ workspace_id: workspace.id, name: name.trim() });
+      if (error) throw error;
+      setName("");
+      await load();
+      toast.success("Project created");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not create project.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-8">
       <PageHeader
         module="projects"
-        title="Projects"
-        description={`${projects.length} active projects`}
+        title="Orbit"
+        description={`${items.length} ${items.length === 1 ? "project" : "projects"} in ${workspace?.name ?? "your workspace"}`}
         actions={
-          <>
-            <div className="flex rounded-lg border border-border p-0.5" role="group" aria-label="View">
-              {(["cards", "list"] as const).map((v) => (
-                <button
-                  key={v}
-                  onClick={() => setView(v)}
-                  aria-pressed={view === v}
-                  aria-label={v === "cards" ? "Card view" : "List view"}
-                  className={cn("rounded-md p-1.5", view === v ? "bg-secondary text-foreground" : "text-muted-foreground")}
-                >
-                  {v === "cards" ? <LayoutGrid className="size-4" /> : <List className="size-4" />}
-                </button>
-              ))}
-            </div>
-            <Button onClick={() => toast("New project", { description: "Name, owner, visibility and members are validated when this goes live." })}>
-              <Plus /> New project
-            </Button>
-          </>
+          <div
+            className="flex rounded-lg border border-border p-0.5"
+            role="group"
+            aria-label="View"
+          >
+            {(["cards", "list"] as const).map((v) => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                aria-pressed={view === v}
+                aria-label={v === "cards" ? "Card view" : "List view"}
+                className={cn(
+                  "rounded-md p-1.5",
+                  view === v ? "bg-secondary text-foreground" : "text-muted-foreground",
+                )}
+              >
+                {v === "cards" ? <LayoutGrid className="size-4" /> : <List className="size-4" />}
+              </button>
+            ))}
+          </div>
         }
       />
-
-      {view === "cards" ? (
+      <form onSubmit={addProject} className="surface flex flex-col gap-3 p-3 sm:flex-row">
+        <Input
+          required
+          maxLength={120}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name your project"
+          aria-label="New project name"
+          className="border-0 bg-transparent shadow-none focus-visible:ring-0"
+        />
+        <Button type="submit" disabled={busy}>
+          <Plus /> Create project
+        </Button>
+      </form>
+      {items.length === 0 ? (
+        <div className="surface p-10 text-center text-sm text-muted-foreground">
+          Your projects will appear here. Create your first project above.
+        </div>
+      ) : view === "cards" ? (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {projects.map((p) => (
-            <article key={p.id} className="surface flex flex-col p-6 transition-shadow hover:shadow-lift">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground">{p.client}</p>
-                  <h2 className="mt-1 text-lg font-semibold leading-snug">{p.name}</h2>
-                </div>
-                <StatusBadge value={p.status} />
-              </div>
-              <div className="mt-6">
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Progress</span>
-                  <span className="font-semibold text-foreground">{p.progress}%</span>
-                </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-primary" style={{ width: `${p.progress}%` }} />
-                </div>
-              </div>
-              <div className="mt-6 flex items-center justify-between border-t border-border pt-4 text-sm">
-                <span className="flex items-center gap-2"><Initials name={p.owner} /> {p.owner}</span>
-                <span className="text-muted-foreground">Due {p.due}</span>
-              </div>
+          {items.map((p) => (
+            <article key={p.id} className="surface p-6">
+              <p className="text-xs text-muted-foreground">{workspace?.name}</p>
+              <h2 className="mt-2 text-lg font-semibold">{p.name}</h2>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Created {new Date(p.created_at).toLocaleDateString()}
+              </p>
             </article>
           ))}
         </div>
       ) : (
-        <div className="surface overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">
-              <tr>
-                <th className="px-5 py-3 font-semibold">Project</th>
-                <th className="px-5 py-3 font-semibold">Owner</th>
-                <th className="px-5 py-3 font-semibold">Tasks</th>
-                <th className="px-5 py-3 font-semibold">Due</th>
-                <th className="px-5 py-3 font-semibold">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {projects.map((p) => (
-                <tr key={p.id} className="hover:bg-muted/50">
-                  <td className="px-5 py-3.5"><p className="font-medium">{p.name}</p><p className="text-xs text-muted-foreground">{p.client}</p></td>
-                  <td className="px-5 py-3.5">{p.owner}</td>
-                  <td className="px-5 py-3.5">{p.tasks}</td>
-                  <td className="px-5 py-3.5">{p.due}</td>
-                  <td className="px-5 py-3.5"><StatusBadge value={p.status} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="surface divide-y divide-border">
+          {items.map((p) => (
+            <div key={p.id} className="px-5 py-4 font-medium">
+              {p.name}
+              <span className="ml-3 text-xs font-normal text-muted-foreground">
+                {new Date(p.created_at).toLocaleDateString()}
+              </span>
+            </div>
+          ))}
         </div>
       )}
     </div>
   );
 }
+
