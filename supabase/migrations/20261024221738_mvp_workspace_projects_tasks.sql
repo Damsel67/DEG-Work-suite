@@ -116,4 +116,3 @@ end;
 $$;
 revoke all on function public.create_workspace(text) from public;
 grant execute on function public.create_workspace(text) to authenticated;
-

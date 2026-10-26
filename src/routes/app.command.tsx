@@ -9,4 +9,3 @@ export const Route = createFileRoute("/app/command")({
 function RedirectToNexa() {
   return <Navigate to="/app/nexa" replace />;
 }
-

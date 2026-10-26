@@ -3,7 +3,6 @@ import {
   AppWindow,
   Bell,
   Check,
-  ChevronDown,
   CalendarDays,
   Hash,
   Megaphone,
@@ -22,24 +21,16 @@ import {
   Video,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useWorkspace } from "@/lib/supabase/workspace-context";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { MODULES } from "@/lib/modules";
-import { ModuleGlyph } from "@/components/app/ModuleGlyph";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { WorkspaceAppsLauncher } from "@/components/app/WorkspaceAppsLauncher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,39 +51,22 @@ type SearchResult = {
 };
 
 export function AppTopbar() {
-  const { user, workspace } = useWorkspace();
-  const { pathname } = useLocation();
+  const { user, workspace, profileName } = useWorkspace();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchState, setSearchState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [searchOpen, setSearchOpen] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  const [launcherOpen, setLauncherOpen] = useState(false);
-  const [launcherQuery, setLauncherQuery] = useState("");
-  const [launcherGroup, setLauncherGroup] = useState("all");
-  const currentApp = MODULES.find((module) =>
-    module.key === "huddle"
-      ? pathname === "/app" || pathname.startsWith("/app/huddle/") || pathname === "/app/messages"
-      : pathname === module.to || pathname.startsWith(module.to + "/"),
-  );
-  const initials = (user?.email ?? "U").slice(0, 2).toUpperCase();
+  const initials = profileName
+    ? profileName
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase()
+    : (user?.email ?? "U").slice(0, 2).toUpperCase();
   const projectResults = searchResults.filter((result) => result.category === "Project");
   const taskResults = searchResults.filter((result) => result.category === "Task");
-  const launcherGroups = [
-    { key: "all", label: "All applications" },
-    { key: "intelligence", label: "Intelligence" },
-    { key: "work", label: "Work" },
-    { key: "customers", label: "Customers" },
-    { key: "operations", label: "Operations" },
-    { key: "human", label: "Personal" },
-  ];
-  const launcherItems = MODULES.filter((module) => {
-    const matchesGroup = launcherGroup === "all" || module.group === launcherGroup;
-    const matchesQuery = `${module.name} ${module.short} ${module.description}`
-      .toLocaleLowerCase()
-      .includes(launcherQuery.trim().toLocaleLowerCase());
-    return matchesGroup && matchesQuery;
-  });
 
   useEffect(() => {
     const query = searchQuery.trim();
@@ -158,6 +132,19 @@ export function AppTopbar() {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-2 border-b border-border bg-background/90 px-4 backdrop-blur md:gap-3 md:px-6">
       <SidebarTrigger className="-ml-1 md:hidden" />
+      <Link
+        to="/app/dashboard"
+        aria-label="Open DEG WorkSuite dashboard"
+        className="hidden shrink-0 items-center gap-2 rounded-md pr-3 text-sm font-semibold tracking-tight text-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:inline-flex"
+      >
+        <Logo className="h-[18px]" />
+      </Link>
+      <span
+        className="hidden max-w-36 truncate border-l border-border pl-3 text-xs text-muted-foreground lg:block"
+        title={workspace?.name}
+      >
+        {workspace?.name}
+      </span>
       <div ref={searchContainerRef} className="relative min-w-0 w-full max-w-3xl flex-1">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -382,7 +369,10 @@ export function AppTopbar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
-              {user?.email ?? "Account"}
+              {profileName ?? user?.email ?? "Account"}
+              {profileName && (
+                <p className="truncate text-xs font-normal text-muted-foreground">{user?.email}</p>
+              )}
               <p className="text-xs font-normal text-muted-foreground">Signed in</p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -401,145 +391,8 @@ export function AppTopbar() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Dialog
-          open={launcherOpen}
-          onOpenChange={(open) => {
-            setLauncherOpen(open);
-            if (!open) {
-              setLauncherQuery("");
-              setLauncherGroup("all");
-            }
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Open workspace applications"
-              title="Applications"
-              className="ml-1 size-8 shrink-0 rounded-md"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="size-[18px] text-current"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                aria-hidden="true"
-              >
-                {[3, 10, 17].flatMap((x) =>
-                  [3, 10, 17].map((y) => (
-                    <rect key={`${x}-${y}`} x={x} y={y} width="4" height="4" rx="0.8" />
-                  )),
-                )}
-              </svg>
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="flex max-h-[min(78vh,42rem)] w-[min(92vw,64rem)] max-w-none flex-col gap-0 overflow-hidden rounded-xl border-border bg-card p-0 shadow-2xl">
-            <DialogHeader className="flex-row items-center gap-4 border-b border-border px-5 py-4 text-left sm:px-6">
-              <div className="relative min-w-0 flex-1">
-                <Search
-                  className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                  aria-hidden="true"
-                />
-                <Input
-                  autoFocus
-                  aria-label="Search applications"
-                  placeholder="Search applications"
-                  value={launcherQuery}
-                  onChange={(event) => setLauncherQuery(event.target.value)}
-                  className="h-10 max-w-sm rounded-full bg-background pl-9"
-                />
-              </div>
-              <Link
-                to="/app"
-                onClick={() => setLauncherOpen(false)}
-                className="shrink-0 rounded-sm px-2 py-1 text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                Home
-              </Link>
-            </DialogHeader>
-            <div className="overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="-ml-2 h-8 gap-1.5 px-2 text-xs font-semibold uppercase tracking-wide"
-                    >
-                      {launcherGroups.find((group) => group.key === launcherGroup)?.label ??
-                        "All applications"}
-                      <ChevronDown className="size-3.5" aria-hidden="true" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-48">
-                    {launcherGroups.map((group) => (
-                      <DropdownMenuItem
-                        key={group.key}
-                        onSelect={() => setLauncherGroup(group.key)}
-                      >
-                        <span className="flex-1">{group.label}</span>
-                        {launcherGroup === group.key && (
-                          <Check className="size-4 text-primary" aria-hidden="true" />
-                        )}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <DialogTitle className="sr-only">WorkSuite applications</DialogTitle>
-                <DialogDescription className="sr-only">
-                  Search and switch between the applications in your DEG WorkSuite.
-                </DialogDescription>
-              </div>
-              {launcherItems.length ? (
-                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {launcherItems.map((module) => {
-                    const active = currentApp?.key === module.key;
-                    return (
-                      <Link
-                        key={module.key}
-                        to={module.to}
-                        onClick={() => setLauncherOpen(false)}
-                        aria-current={active ? "page" : undefined}
-                        aria-label={`${module.name}${active ? ", current application" : ""}${module.status && module.status !== "Live" ? `, ${module.status}` : ""}`}
-                        className={`group flex min-h-[5.5rem] items-center gap-3 rounded-lg border border-border/70 bg-background/70 px-3 py-3 text-left transition-colors hover:border-primary/30 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${active ? "border-primary/35 bg-primary/5" : ""}`}
-                      >
-                        <span
-                          className={`flex size-11 shrink-0 items-center justify-center rounded-md bg-primary/8 text-primary transition-colors group-hover:bg-primary/12 ${active ? "bg-primary/12" : ""}`}
-                        >
-                          <ModuleGlyph module={module} className="size-5" />
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="flex items-center gap-2">
-                            <span className="truncate text-sm font-semibold">{module.name}</span>
-                            {active && (
-                              <span
-                                className="size-1.5 shrink-0 rounded-full bg-primary"
-                                aria-hidden="true"
-                              />
-                            )}
-                          </span>
-                          <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                            {module.status === "Live"
-                              ? module.short
-                              : `${module.status ?? "Prototype"} · ${module.short}`}
-                          </span>
-                        </span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="mt-6 rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-                  No matching applications.
-                </p>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
+        <WorkspaceAppsLauncher className="ml-1 size-8 shrink-0 rounded-md" />
       </div>
     </header>
   );
 }
-

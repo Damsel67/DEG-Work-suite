@@ -119,4 +119,3 @@ export function Initials({ name }: { name: string }) {
     </span>
   );
 }
-

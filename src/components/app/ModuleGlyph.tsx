@@ -17,4 +17,3 @@ export function ModuleGlyph({
     <img className={className} src={metadata.icon} alt="" />
   );
 }
-

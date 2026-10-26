@@ -199,7 +199,7 @@ export function HuddleContextualWorkspace({
   initialView,
 }: {
   section: Section;
-  initialView?: string | undefined;
+  initialView?: string;
 }) {
   const { workspace } = useWorkspace();
   const [activeView, setActiveView] = useState(
@@ -710,12 +710,7 @@ function CalendarView({ selectedCalendar }: { selectedCalendar: string }) {
           >
             <ChevronLeft aria-hidden="true" />
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Next week"
-            onClick={() => shiftWeek(1)}
-          >
+          <Button variant="outline" size="icon" aria-label="Next week" onClick={() => shiftWeek(1)}>
             <ChevronRight aria-hidden="true" />
           </Button>
           <Button variant="outline" size="sm" onClick={() => setWeekAnchor(new Date())}>
@@ -854,4 +849,3 @@ function HashtagOverview() {
     </div>
   );
 }
-

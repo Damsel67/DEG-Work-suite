@@ -19,11 +19,13 @@ describe("App routing", () => {
 describe("Prototype routing", () => {
   it.each([
     "/app",
+    "/app/dashboard",
     "/app/huddle/chats",
     "/app/huddle/channels",
     "/app/huddle/meetings",
     "/app/projects",
     "/app/tasks",
+    "/app/people",
     "/app/command",
     "/app/nexa",
     "/app/messages",
@@ -35,4 +37,3 @@ describe("Prototype routing", () => {
     expect(router.matchRoutes(path).at(-1)?.routeId).not.toBe(rootRouteId);
   });
 });
-

@@ -67,4 +67,3 @@ function TrustPage() {
     </SiteShell>
   );
 }
-

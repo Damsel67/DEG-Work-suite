@@ -16,8 +16,10 @@ import { Route as TrustRouteImport } from './routes/trust'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppAutomationsRouteImport } from './routes/app.automations'
 import { Route as AppCommandRouteImport } from './routes/app.command'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppDocumentsRouteImport } from './routes/app.documents'
 import { Route as AppFinanceRouteImport } from './routes/app.finance'
+import { Route as AppGettingStartedRouteImport } from './routes/app.getting-started'
 import { Route as AppInsightsRouteImport } from './routes/app.insights'
 import { Route as AppMessagesRouteImport } from './routes/app.messages'
 import { Route as AppMomentsRouteImport } from './routes/app.moments'
@@ -29,6 +31,7 @@ import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppSupportRouteImport } from './routes/app.support'
 import { Route as AppTasksRouteImport } from './routes/app.tasks'
 import { Route as AppHuddleSectionRouteImport } from './routes/app.huddle.$section'
+import { Route as AppSuiteAppIdRouteImport } from './routes/app.suite.$appId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -65,6 +68,11 @@ const AppCommandRoute = AppCommandRouteImport.update({
   path: '/command',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDocumentsRoute = AppDocumentsRouteImport.update({
   id: '/documents',
   path: '/documents',
@@ -73,6 +81,11 @@ const AppDocumentsRoute = AppDocumentsRouteImport.update({
 const AppFinanceRoute = AppFinanceRouteImport.update({
   id: '/finance',
   path: '/finance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGettingStartedRoute = AppGettingStartedRouteImport.update({
+  id: '/getting-started',
+  path: '/getting-started',
   getParentRoute: () => AppRoute,
 } as any)
 const AppInsightsRoute = AppInsightsRouteImport.update({
@@ -130,6 +143,11 @@ const AppHuddleSectionRoute = AppHuddleSectionRouteImport.update({
   path: '/huddle/$section',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSuiteAppIdRoute = AppSuiteAppIdRouteImport.update({
+  id: '/suite/$appId',
+  path: '/suite/$appId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,8 +156,10 @@ export interface FileRoutesByFullPath {
   '/trust': typeof TrustRoute
   '/app/automations': typeof AppAutomationsRoute
   '/app/command': typeof AppCommandRoute
+  '/app/dashboard': typeof AppDashboardRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/finance': typeof AppFinanceRoute
+  '/app/getting-started': typeof AppGettingStartedRoute
   '/app/insights': typeof AppInsightsRoute
   '/app/messages': typeof AppMessagesRoute
   '/app/moments': typeof AppMomentsRoute
@@ -152,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/app/tasks': typeof AppTasksRoute
   '/app/': typeof AppIndexRoute
   '/app/huddle/$section': typeof AppHuddleSectionRoute
+  '/app/suite/$appId': typeof AppSuiteAppIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -159,8 +180,10 @@ export interface FileRoutesByTo {
   '/trust': typeof TrustRoute
   '/app/automations': typeof AppAutomationsRoute
   '/app/command': typeof AppCommandRoute
+  '/app/dashboard': typeof AppDashboardRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/finance': typeof AppFinanceRoute
+  '/app/getting-started': typeof AppGettingStartedRoute
   '/app/insights': typeof AppInsightsRoute
   '/app/messages': typeof AppMessagesRoute
   '/app/moments': typeof AppMomentsRoute
@@ -173,6 +196,7 @@ export interface FileRoutesByTo {
   '/app/tasks': typeof AppTasksRoute
   '/app': typeof AppIndexRoute
   '/app/huddle/$section': typeof AppHuddleSectionRoute
+  '/app/suite/$appId': typeof AppSuiteAppIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -182,8 +206,10 @@ export interface FileRoutesById {
   '/trust': typeof TrustRoute
   '/app/automations': typeof AppAutomationsRoute
   '/app/command': typeof AppCommandRoute
+  '/app/dashboard': typeof AppDashboardRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/finance': typeof AppFinanceRoute
+  '/app/getting-started': typeof AppGettingStartedRoute
   '/app/insights': typeof AppInsightsRoute
   '/app/messages': typeof AppMessagesRoute
   '/app/moments': typeof AppMomentsRoute
@@ -196,6 +222,7 @@ export interface FileRoutesById {
   '/app/tasks': typeof AppTasksRoute
   '/app/': typeof AppIndexRoute
   '/app/huddle/$section': typeof AppHuddleSectionRoute
+  '/app/suite/$appId': typeof AppSuiteAppIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -206,8 +233,10 @@ export interface FileRouteTypes {
     | '/trust'
     | '/app/automations'
     | '/app/command'
+    | '/app/dashboard'
     | '/app/documents'
     | '/app/finance'
+    | '/app/getting-started'
     | '/app/insights'
     | '/app/messages'
     | '/app/moments'
@@ -220,6 +249,7 @@ export interface FileRouteTypes {
     | '/app/tasks'
     | '/app/'
     | '/app/huddle/$section'
+    | '/app/suite/$appId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -227,8 +257,10 @@ export interface FileRouteTypes {
     | '/trust'
     | '/app/automations'
     | '/app/command'
+    | '/app/dashboard'
     | '/app/documents'
     | '/app/finance'
+    | '/app/getting-started'
     | '/app/insights'
     | '/app/messages'
     | '/app/moments'
@@ -241,6 +273,7 @@ export interface FileRouteTypes {
     | '/app/tasks'
     | '/app'
     | '/app/huddle/$section'
+    | '/app/suite/$appId'
   id:
     | '__root__'
     | '/'
@@ -249,8 +282,10 @@ export interface FileRouteTypes {
     | '/trust'
     | '/app/automations'
     | '/app/command'
+    | '/app/dashboard'
     | '/app/documents'
     | '/app/finance'
+    | '/app/getting-started'
     | '/app/insights'
     | '/app/messages'
     | '/app/moments'
@@ -263,6 +298,7 @@ export interface FileRouteTypes {
     | '/app/tasks'
     | '/app/'
     | '/app/huddle/$section'
+    | '/app/suite/$appId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -323,6 +359,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCommandRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/documents': {
       id: '/app/documents'
       path: '/documents'
@@ -335,6 +378,13 @@ declare module '@tanstack/react-router' {
       path: '/finance'
       fullPath: '/app/finance'
       preLoaderRoute: typeof AppFinanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/getting-started': {
+      id: '/app/getting-started'
+      path: '/getting-started'
+      fullPath: '/app/getting-started'
+      preLoaderRoute: typeof AppGettingStartedRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/insights': {
@@ -414,14 +464,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHuddleSectionRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/suite/$appId': {
+      id: '/app/suite/$appId'
+      path: '/suite/$appId'
+      fullPath: '/app/suite/$appId'
+      preLoaderRoute: typeof AppSuiteAppIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
   AppAutomationsRoute: typeof AppAutomationsRoute
   AppCommandRoute: typeof AppCommandRoute
+  AppDashboardRoute: typeof AppDashboardRoute
   AppDocumentsRoute: typeof AppDocumentsRoute
   AppFinanceRoute: typeof AppFinanceRoute
+  AppGettingStartedRoute: typeof AppGettingStartedRoute
   AppInsightsRoute: typeof AppInsightsRoute
   AppMessagesRoute: typeof AppMessagesRoute
   AppMomentsRoute: typeof AppMomentsRoute
@@ -434,13 +493,16 @@ interface AppRouteChildren {
   AppTasksRoute: typeof AppTasksRoute
   AppIndexRoute: typeof AppIndexRoute
   AppHuddleSectionRoute: typeof AppHuddleSectionRoute
+  AppSuiteAppIdRoute: typeof AppSuiteAppIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAutomationsRoute: AppAutomationsRoute,
   AppCommandRoute: AppCommandRoute,
+  AppDashboardRoute: AppDashboardRoute,
   AppDocumentsRoute: AppDocumentsRoute,
   AppFinanceRoute: AppFinanceRoute,
+  AppGettingStartedRoute: AppGettingStartedRoute,
   AppInsightsRoute: AppInsightsRoute,
   AppMessagesRoute: AppMessagesRoute,
   AppMomentsRoute: AppMomentsRoute,
@@ -453,6 +515,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppTasksRoute: AppTasksRoute,
   AppIndexRoute: AppIndexRoute,
   AppHuddleSectionRoute: AppHuddleSectionRoute,
+  AppSuiteAppIdRoute: AppSuiteAppIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

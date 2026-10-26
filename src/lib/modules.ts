@@ -188,4 +188,3 @@ export const NAV_GROUPS: { label: string; keys: ModuleKey[] }[] = [
   { label: "Operations", keys: ["finance", "automations", "insights", "people"] },
   { label: "Personal", keys: ["moments"] },
 ];
-

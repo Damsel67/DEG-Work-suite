@@ -57,4 +57,3 @@ function NexaPage() {
     </div>
   );
 }
-

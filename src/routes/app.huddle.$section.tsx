@@ -44,7 +44,7 @@ function HuddleSectionPage() {
             ? "history"
             : (selected.key as "chats" | "channels" | "contacts" | "history" | "files" | "calendar")
         }
-        initialView={selected.key === "meetings" ? "meetings" : undefined}
+        {...(selected.key === "meetings" ? { initialView: "meetings" } : {})}
       />
     );
   }
@@ -78,4 +78,3 @@ function HuddleSectionPage() {
     </div>
   );
 }
-

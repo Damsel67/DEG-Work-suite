@@ -9,4 +9,3 @@ export const Route = createFileRoute("/app/messages")({
 function RedirectToHuddle() {
   return <Navigate to="/app" replace />;
 }
-

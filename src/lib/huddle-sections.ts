@@ -94,4 +94,3 @@ export const HUDDLE_SECTIONS: {
       "No presence or availability provider is configured, so this page does not invent online states.",
   },
 ];
-
